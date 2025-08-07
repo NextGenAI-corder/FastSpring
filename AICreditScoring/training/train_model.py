@@ -105,7 +105,7 @@ for col in cat_cols:
     )
     df[col] = df[col].cat.codes
 
-with open("cat_maps.pkl", "wb") as f:
+with open("./models/cat_maps.pkl", "wb") as f:
     pickle.dump(cat_maps, f)
 
 y = df["DelinquencyInfo"].fillna(0)
@@ -120,30 +120,6 @@ X = X.astype(float)
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.3, random_state=42
 )
-
-# Japanese to English feature name mapping
-"""feature_jp_map = {
-    "Name": "名前",
-    "Sex": "性別",
-    "Marital": "婚姻状況",
-    "Age": "年齢",
-    "Income": "年収",
-    "CreditAppAmount": "申込額",
-    "OtherDebts": "他債務",
-    "DebtRestruct": "債務整理",
-    "BorrowingRatio": "借入比率",
-    "JobType": "職種区分",
-    "Occupation": "職業",
-    "Industry": "業種",
-    "Education": "学歴",
-    "Dependents": "扶養人数",
-    "OwnHouse": "持ち家",
-    "Foreigner": "外国人",
-    "Phone": "電話有無",
-    "EmploymentYears": "勤続年数",
-    "Guarantor": "保証人有無",
-    "Collateral": "担保有無",
-}"""
 
 # Weight adjustment
 # Prioritize Recall ⇒ Increase (e.g., 25, 30...)
@@ -230,7 +206,7 @@ df_out.insert(7, "DelinquencyInfo", y)
 df_out.to_csv("./data/input.csv", index=False, encoding="utf-8-sig")
 print("Formatted credit evaluation data has been output to input.csv.")
 
-with open("model.pkl", "wb") as f:
+with open("./models/model.pkl", "wb") as f:
     pickle.dump(model, f)
 
 print("\nModel and scores have been saved to individual_scores.csv.")

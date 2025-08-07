@@ -4,10 +4,10 @@ import pickle
 import numpy as np
 
 # Load model and category mappings
-with open("models/model.pkl", "rb") as f:
+with open("./models/model.pkl", "rb") as f:
     model = pickle.load(f)
 
-with open("models/cat_maps.pkl", "rb") as f:
+with open("./models/cat_maps.pkl", "rb") as f:
     cat_maps = pickle.load(f)
 
 # Path to the CSV file
