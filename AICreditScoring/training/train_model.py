@@ -100,9 +100,11 @@ cat_cols = ["Sex", "Marital", "Occupation", "Industry"]
 cat_maps = {}
 for col in cat_cols:
     df[col] = df[col].astype("category")
+    """
     cat_maps[col] = dict(
         zip(df[col].cat.categories, range(len(df[col].cat.categories)))
-    )
+    )"""
+    cat_maps[col] = {code: label for code, label in enumerate(df[col].cat.categories)}
     df[col] = df[col].cat.codes
 
 with open("./models/cat_maps.pkl", "wb") as f:
@@ -176,8 +178,6 @@ for i, row in enumerate(shap_df_sorted.itertuples(), start=1):
     for feat in shap_top3.index:
         val = shap_series[feat]
         sign = "Positive" if val > 0 else "Negative"
-        # jp = feature_jp_map.get(feat, feat)
-        # print(f"{jp}: SHAP = {val:.4f} ({sign})")
         print(f"{feat}: SHAP = {val:.4f} ({sign})")
 
 # Overall evaluation

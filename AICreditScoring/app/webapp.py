@@ -53,10 +53,21 @@ def index():
         # Load CSV file
         df = pd.read_csv(CSV_FILE, encoding="utf-8-sig")
 
-        # Apply category mappings (forward)
-        for col, mapping in cat_maps.items():
+        # Create forward mapping (label → code) for each categorical column
+        cat_maps_forward = {
+            col: {label: code for code, label in mapping.items()}
+            for col, mapping in cat_maps.items()
+        }
+
+        # Apply forward mapping to DataFrame
+        # Convert only when the value matches a label; keep numeric codes unchanged
+        for col, mapping_fwd in cat_maps_forward.items():
             if col in df.columns:
-                df[col] = df[col].map(mapping).fillna(0)
+    
+                def _to_code(x, mf=mapping_fwd):
+                    return mf.get(x, x)
+
+                df[col] = df[col].apply(_to_code)
 
         # Temporarily store the target column
         delinquency_info_col = None
@@ -96,14 +107,16 @@ def index():
         if delinquency_info_col is not None:
             df["DelinquencyInfo"] = delinquency_info_col
 
-        # Reverse category mappings
-        cat_maps_rev = {
-            col: {v: k for k, v in mapping.items()} for col, mapping in cat_maps.items()
-        }
-        for col, mapping_rev in cat_maps_rev.items():
+        # Reverse mapping for display (code → label)
+        # Converts numeric codes back to their corresponding labels for display purposes.
+        # If a value does not match any code in the mapping, keep it unchanged.
+        for col, mapping in cat_maps.items():  # cat_maps は {コード:ラベル}
             if col in df.columns:
-                df[col] = df[col].map(mapping_rev).fillna("")
 
+                def _to_label(x, m=mapping):
+                    return m.get(x, x)  # マッチしなければ元の値
+
+                df[col] = df[col].apply(_to_label)
         # Columns to display (customizable)
         display_cols = [
             "Name",
@@ -143,4 +156,6 @@ def index():
 
 
 if __name__ == "__main__":
+    # The Flask application's default port is set to 8080 for this project.
+    # This value is not fixed — you can change it to any available port as needed.
     app.run(host="0.0.0.0", port=8080)
